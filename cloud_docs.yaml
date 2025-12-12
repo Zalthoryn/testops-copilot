@@ -1,0 +1,3393 @@
+openapi: 3.0.3
+info:
+  title: SVC Public API
+  version: 0.0.1
+  description: '[Документация сервиса «Виртуальные машины»](https://cloud.ru/docs/virtual-machines/ug/index.html)'
+  contact:
+    email: support@cloud.ru
+paths:
+  /api/v1/flavors:
+    get:
+      tags:
+        - Flavors
+      summary: Получение списка флейворов
+      operationId: get_flavors_svc_v1_flavors_get
+      parameters:
+        - required: false
+          schema:
+            type: string
+            enum:
+              - created_time
+            default: created_time
+          name: order_by
+          description: Параметры сортировки списка.
+          in: query
+        - required: false
+          schema:
+            type: boolean
+            default: true
+          name: order_desc
+          description: "Направление сортировки: true — по убыванию, false — по возрастанию." 
+          in: query
+        - required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          name: offset
+          description: Количество элементов с начала списка, которые будут пропущены.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 0
+            exclusiveMinimum: true
+            default: 50
+          name: limit
+          description: Максимальное количество элементов в списке.
+          in: query
+        - required: false
+          schema:
+            type: string
+            format: uuid4
+            description: Идентификатор зоны доступности.
+          name: availability_zone_id
+          description: Идентификатор зоны доступности.
+          in: query
+        - required: false
+          schema:
+            type: string
+            format: uuid4
+            description: Идентификатор проекта.
+          name: project_id
+          description: Идентификатор проекта.
+          in: query
+        - required: false
+          schema:
+            type: string
+            maxLength: 64
+            minLength: 1
+          name: name
+          description: Название флейвора.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            maximum: 128
+            minimum: 0
+            exclusiveMinimum: true
+          name: cpu
+          description: Количество виртуальных центральных процессоров (vCPU).
+          in: query
+        - required: false
+          schema:
+            type: integer
+            maximum: 1024
+            minimum: 0
+            exclusiveMinimum: true
+          name: ram
+          description: Объем оперативной памяти (RAM) в ГБ.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            maximum: 16
+            minimum: 0
+          name: gpu
+          description: Количество графических процессоров (GPU).
+          in: query
+        - required: false
+          schema:
+            $ref: '#/components/schemas/FlavorEnum'
+          name: type
+          description: Тип флейвора.
+          in: query
+        - required: false
+          schema:
+            type: string
+          name: oversubscription
+          description: Гарантированная доля vCPU.
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse_PublicFlavorResponse_'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Flavors Svc V1 Flavors Get
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Flavors Svc V1 Flavors Get
+        '404':
+          description: Не удалось найти зону доступности с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AvailabilityZoneNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Get Flavors Svc V1 Flavors Get
+        '422':
+          description: Не удалось найти проект с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongProjectExceptionSchema'
+                type: array
+                title: Response 422 Get Flavors Svc V1 Flavors Get
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Flavors Svc V1 Flavors Get
+      security:
+        - userPlaneApiToken: []
+  /api/v1/flavors/{flavor_id}:
+    get:
+      tags:
+        - Flavors
+      summary: Получение информации о флейворе
+      operationId: get_flavor_by_id_svc_v1_flavors__flavor_id__get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid4
+          name: flavor_id
+          description: Идентификатор флейвора.
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlavorResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Flavor By Id Svc V1 Flavors  Flavor Id  Get
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Flavor By Id Svc V1 Flavors  Flavor Id  Get
+        '404':
+          description: Не удалось найти флейвор с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/FlavorNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Get Flavor By Id Svc V1 Flavors  Flavor Id  Get
+        '422':
+          description: Не удалось выполнить запрос
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CustomRequestValidationErrorSchema'
+                type: array
+                title: Response 422 Get Flavor By Id Svc V1 Flavors  Flavor Id  Get
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Flavor By Id Svc V1 Flavors  Flavor Id  Get
+      security:
+        - userPlaneApiToken: []
+  /api/v1/disks:
+    get:
+      tags:
+        - Disks
+      summary: Получение списка дисков
+      operationId: get_disks_svc_v1_disks_get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: project_id
+          description: Идентификатор проекта.
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+            default: []
+          name: tag_ids
+          description: Идентификаторы тегов.
+          in: query
+        - required: false
+          schema:
+            type: string
+            format: uuid
+          name: availability_zone_id
+          description: Идентификатор зоны доступности.
+          in: query
+        - required: false
+          schema:
+            type: string
+            maxLength: 64
+            minLength: 1
+          name: name
+          description: Название диска.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          name: offset
+          description: Количество элементов с начала списка, которые будут пропущены.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 0
+            exclusiveMinimum: true
+            default: 50
+          name: limit
+          description: Максимальное количество элементов в списке.
+          in: query
+        - required: false
+          schema:
+            type: string
+            enum:
+              - created_time
+            default: created_time
+          name: order_by
+          description: Параметры сортировки списка.
+          in: query
+        - required: false
+          schema:
+            type: boolean
+            default: true
+          name: order_desc
+          description: "Направление сортировки: true — по убыванию, false — по возрастанию."
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse_PublicDiskResponse_'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Disks Svc V1 Disks Get
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Disks Svc V1 Disks Get
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти проект с указанным идентификатором.
+            - Не удалось найти зону доступности с указанным идентификатором.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongProjectExceptionSchema'
+                type: array
+                title: Response 422 Get Disks Svc V1 Disks Get
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Disks Svc V1 Disks Get
+      security:
+        - userPlaneApiToken: []
+    post:
+      tags:
+        - Disks
+      summary: Создание диска
+      operationId: create_disk_svc_v1_disks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicDiskCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDiskResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Create Disk Svc V1 Disks Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Create Disk Svc V1 Disks Post
+        '409':
+          description: Диск с такими параметрами уже существует
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskAlreadyExistsExceptionSchema'
+                type: array
+                title: Response 409 Create Disk Svc V1 Disks Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти зону доступности с указанным идентификатором.
+            - Не удалось найти зону доступности с указанным названием.
+            - Не удалось найти тип диска с указанным идентификатором.
+            - Не удалось найти тип диска с указанным названием.
+            - Не удалось найти проект с указанным идентификатором.
+            - Проект не существует в указанной зоне доступности.
+            - Не удалось найти тег с указанным идентификатором.
+            - Не удалось найти тег с указанным названием.
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongAvailabilityZoneByIdExceptionSchema'
+                type: array
+                title: Response 422 Create Disk Svc V1 Disks Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Create Disk Svc V1 Disks Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1/disks/{disk_id}:
+    get:
+      tags:
+        - Disks
+      summary: Получение информации о диске
+      operationId: get_disk_by_id_svc_v1_disks__disk_id__get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid4
+          name: disk_id
+          description: Идентификатор диска.
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDiskResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Disk By Id Svc V1 Disks  Disk Id  Get
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Disk By Id Svc V1 Disks  Disk Id  Get
+        '404':
+          description: Не удалось найти диск с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Get Disk By Id Svc V1 Disks  Disk Id  Get
+        '422':
+          description: Не удалось выполнить запрос
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CustomRequestValidationErrorSchema'
+                type: array
+                title: Response 422 Get Disk By Id Svc V1 Disks  Disk Id  Get
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Disk By Id Svc V1 Disks  Disk Id  Get
+      security:
+        - userPlaneApiToken: []
+    put:
+      tags:
+        - Disks
+      summary: Обновление диска
+      operationId: update_disk_svc_v1_disks__disk_id__put
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid4
+          name: disk_id
+          description: Идентификатор диска.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicDiskUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDiskResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Update Disk Svc V1 Disks  Disk Id  Put
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Update Disk Svc V1 Disks  Disk Id  Put
+        '404':
+          description: Не удалось найти диск с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Update Disk Svc V1 Disks  Disk Id  Put
+        '409':
+          description: Диск с такими параметрами уже существует
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskAlreadyExistsExceptionSchema'
+                type: array
+                title: Response 409 Update Disk Svc V1 Disks  Disk Id  Put
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти тип диска с указанным идентификатором.
+            - Невозможно уменьшить размер диска.
+            - Не удалось найти тег с указанным идентификатором.
+            - Невозможно изменить диск, доступный только для чтения.
+            - Изменения в указанной зоне доступности запрещены.
+            - Диск с текущим статусом не может быть изменен.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongDiskTypeByIdExceptionSchema'
+                type: array
+                title: Response 422 Update Disk Svc V1 Disks  Disk Id  Put
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Update Disk Svc V1 Disks  Disk Id  Put
+      security:
+        - userPlaneApiToken: []
+    delete:
+      tags:
+        - Disks
+      summary: Удаление диска
+      operationId: delete_disk_svc_v1_disks__disk_id__delete
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid4
+          name: disk_id
+          description: Идентификатор диска.
+          in: path
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Delete Disk Svc V1 Disks  Disk Id  Delete
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Delete Disk Svc V1 Disks  Disk Id  Delete
+        '404':
+          description: Не удалось найти диск с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Delete Disk Svc V1 Disks  Disk Id  Delete
+        '405':
+          description: У диска есть связанные сущности
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskHasReferencesExceptionSchema'
+                type: array
+                title: Response 405 Delete Disk Svc V1 Disks  Disk Id  Delete
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Невозможно удалить диск, у которого есть несколько точек монтирования.
+            - Невозможно удалить загрузочный диск без удаления ВМ.
+            - Изменения в указанной зоне доступности запрещены.
+            - Диск с текущим статусом не может быть удален.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskCanNotBeDeletedWithMultiMountsExceptionSchema'
+                type: array
+                title: Response 422 Delete Disk Svc V1 Disks  Disk Id  Delete
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Delete Disk Svc V1 Disks  Disk Id  Delete
+      security:
+        - userPlaneApiToken: []
+  /api/v1/disks/{disk_id}/attach:
+    post:
+      tags:
+        - Disks
+      summary: Подключение диска к ВМ
+      operationId: attach_disk_svc_v1_disks__disk_id__attach_post
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid4
+          name: disk_id
+          description: Идентификатор диска.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiskAttachRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDiskResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Attach Disk Svc V1 Disks  Disk Id  Attach Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Attach Disk Svc V1 Disks  Disk Id  Attach Post
+        '404':
+          description: Не удалось найти диск с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Attach Disk Svc V1 Disks  Disk Id  Attach Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Диск уже подключен к виртуальной машине.
+            - Невозможно подключить диск с текущим статусом.
+            - Невозможно подключить диск к виртуальной машине с текущим статусом.
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Attach Disk Svc V1 Disks  Disk Id  Attach Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Attach Disk Svc V1 Disks  Disk Id  Attach Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1/disks/{disk_id}/detach:
+    post:
+      tags:
+        - Disks
+      summary: Отключение диска от ВМ
+      operationId: detach_disk_svc_v1_disks__disk_id__detach_post
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid4
+          name: disk_id
+          description: Идентификатор диска.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiskDetachRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicDiskResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Detach Disk Svc V1 Disks  Disk Id  Detach Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Detach Disk Svc V1 Disks  Disk Id  Detach Post
+        '404':
+          description: Не удалось найти диск с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DiskNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Detach Disk Svc V1 Disks  Disk Id  Detach Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Невозможно отключить загрузочный диск.
+            - Диск уже отключен.
+            - Невозможно отключить диск с текущим статусом.
+            - Невозможно отключить диск от виртуальной машины с текущим статусом.
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Detach Disk Svc V1 Disks  Disk Id  Detach Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Detach Disk Svc V1 Disks  Disk Id  Detach Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1/vms:
+    get:
+      tags:
+        - VMs
+      summary: Получение списка виртуальных машин
+      operationId: get_vms_svc_v1_vms_get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: project_id
+          description: Идентификатор проекта.
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+          name: vm_ids
+          description: Идентификаторы виртуальных машин. 
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+          name: tag_ids
+          description: Идентификаторы тегов.
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+          name: availability_zone_ids
+          description: Идентификаторы зон доступности.
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+          name: image_ids
+          description: Идентификаторы образов.
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+          name: flavor_ids
+          description: Идентификаторы флейворов.
+          in: query
+        - required: false
+          schema:
+            items:
+              type: string
+              format: uuid
+            type: array
+          name: placement_group_ids
+          description: Идентификаторы групп размещения.
+          in: query
+        - required: false
+          schema:
+            items:
+              $ref: '#/components/schemas/VmState'
+            type: array
+          name: statuses
+          description: Статусы виртуальных машин. 
+          in: query
+        - required: false
+          schema:
+            type: string
+            maxLength: 64
+            minLength: 1
+          name: name
+          description: Название виртуальной машины.
+          in: query
+        - required: false
+          schema:
+            type: boolean
+          name: empty_fip
+          description: Опция для фильтрации виртуальных машин без назначенных публичных IP-адресов.
+          in: query
+        - required: false
+          schema:
+            type: boolean
+          name: free_tier
+          description: Опция для фильтрации бесплатных виртуальных машин (free tier).
+          in: query
+        - required: false
+          schema:
+            type: boolean
+          name: support_gpu
+          description: Опция для фильтрации виртуальных машин с поддержкой GPU.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          name: offset
+          description: Количество элементов с начала списка, которые будут пропущены.
+          in: query
+        - required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 0
+            exclusiveMinimum: true
+            default: 50
+          name: limit
+          description: Максимальное количество элементов в списке.
+          in: query
+        - required: false
+          schema:
+            type: string
+            enum:
+              - created_time
+            default: created_time
+          name: order_by
+          description: Параметры сортировки списка.
+          in: query
+        - required: false
+          schema:
+            type: boolean
+            default: true
+          name: order_desc
+          description: "Направление сортировки: true — по убыванию, false — по возрастанию."
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse_PublicVmResponseItem_'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Vms Svc V1 Vms Get
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Vms Svc V1 Vms Get
+        '404':
+          description: Не удалось найти зону доступности с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AvailabilityZoneNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Get Vms Svc V1 Vms Get
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти проект с указанным идентификатором.
+            - Не удалось найти тег с указанным идентификатором.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongProjectExceptionSchema'
+                type: array
+                title: Response 422 Get Vms Svc V1 Vms Get
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Vms Svc V1 Vms Get
+      security:
+        - userPlaneApiToken: []
+    put:
+      tags:
+        - VMs
+      summary: Изменение статуса виртуальной машины
+      operationId: update_multiple_vm_states_public_svc_v1_vms_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/VmSetStateRequest'
+              type: array
+              title: Body
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Update Multiple Vm States Public Svc V1 Vms Put
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Update Multiple Vm States Public Svc V1 Vms Put
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Невозможно изменить текущий статус виртуальной машины. 
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Update Multiple Vm States Public Svc V1 Vms Put
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Update Multiple Vm States Public Svc V1 Vms Put
+      security:
+        - userPlaneApiToken: []
+    post:
+      tags:
+        - VMs
+      summary: Создание виртуальной машины
+      operationId: create_vm_svc_v1_vms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api__models__vm_schemas__PublicVmsCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PublicVmResponse'
+                type: array
+                title: Response Create Vm Svc V1 Vms Post
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Create Vm Svc V1 Vms Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Create Vm Svc V1 Vms Post
+        '404':
+          description: |
+            Ресурс не найден:
+            - Не удалось найти образ с указанным идентификатором.
+            - Не удалось найти флейвор с указанным идентификатором.
+            - Не удалось найти тип диска с указанным идентификатором.
+            - Не удалось найти тег с указанным идентификатором.
+            - Не удалось найти публичный IP с указанным идентификатором.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ImageNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Create Vm Svc V1 Vms Post
+        '422':
+          description: |
+            Запрос не выполнен:         
+            - Не удалось найти проект с указанным идентификатором.
+            - Проект не существует в указанной зоне доступности.
+            - Слишком маленький размер загрузочного диска.
+            - Превышено максимальное количество дисков для виртуальной машины.
+            - Ошибка в метаданных виртуальной машины.
+            - Ошибка в пользовательском шаблоне виртуальной машины.
+            - Метаданные образа с указанным идентификатором не найдены.
+            - Указанный IP-адрес недоступен.
+            - Подсеть по умолчанию не найдена.
+            - Обязательные для выбранного образа метаданные отсутствуют.
+            - Указанный IP-адрес не принадлежит подсети.
+            - Не удалось найти группу безопасности по умолчанию.
+            - Не удалось найти группу безопасности с указанным идентификатором.
+            - Публичный IP-адрес уже используется.
+            - Не удалось присвоить внутренний IP-адрес.
+            - Не удалось найти публичный IP с указанным идентификатором.
+            - Не заполнены обязательные поля с метаданными для образа.
+            - Флейвор недоступен.
+            - Группа безопасности недоступна.
+            - Подсеть недоступна.
+            - Публичный IP-адрес недоступен.
+            - Изменения в указанной зоне доступности запрещены.
+            - Статус указаного диска не позволяет подключить его к виртуальной машине.
+            - Выбранный тип диска доступен только на уровне бесплатного использования (free tier).
+            - Не удалось найти группу размещения с указанным идентификатором.
+            - Не удалось найти группу размещения с указанным названием.
+            - Флейвор с указанным идентификатором недоступен для виртуальной машины в этом проекте или организации.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongProjectExceptionSchema'
+                type: array
+                title: Response 422 Create Vm Svc V1 Vms Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExternalNetNotFoundOnServerExceptionSchema'
+                type: array
+                title: Response 500 Create Vm Svc V1 Vms Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1/vms/{vm_id}:
+    get:
+      tags:
+        - VMs
+      summary: Получение информации о виртуальной машине
+      operationId: get_vm_by_id_svc_v1_vms__vm_id__get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: vm_id
+          description: Идентификатор виртуальной машины.
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicVmResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Vm By Id Svc V1 Vms  Vm Id  Get
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Vm By Id Svc V1 Vms  Vm Id  Get
+        '404':
+          description: Не удалось найти виртуальную машину с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VmNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Get Vm By Id Svc V1 Vms  Vm Id  Get
+        '422':
+          description: Не удалось выполнить запрос
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/CustomRequestValidationErrorSchema'
+                type: array
+                title: Response 422 Get Vm By Id Svc V1 Vms  Vm Id  Get
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Vm By Id Svc V1 Vms  Vm Id  Get
+      security:
+        - userPlaneApiToken: []
+    put:
+      tags:
+        - VMs
+      summary: Обновление виртуальной машины
+      operationId: update_vm_svc_v1_vms__vm_id__put
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: vm_id
+          description: Идентификатор виртуальной машины.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VmUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicVmResponse'
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Update Vm Svc V1 Vms  Vm Id  Put
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Update Vm Svc V1 Vms  Vm Id  Put
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Не удалось найти тег с указанным идентификатором.
+            - Не удалось найти флейвор с указанным идентификатором.
+            - Виртуальная машина с текущим статусом не может быть изменена.
+            - Изменения в указанной зоне доступности запрещены.
+            - Флейвор с указанным идентификатором недоступен для виртуальной машины в этом проекте или организации.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Update Vm Svc V1 Vms  Vm Id  Put
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Update Vm Svc V1 Vms  Vm Id  Put
+      security:
+        - userPlaneApiToken: []
+    delete:
+      tags:
+        - VMs
+      summary: Удаление виртуальной машины
+      operationId: delete_vm_svc_v1_vms__vm_id__delete
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: vm_id
+          description: Идентификатор виртуальной машины.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VmDeleteRequest'
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Delete Vm Svc V1 Vms  Vm Id  Delete
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Delete Vm Svc V1 Vms  Vm Id  Delete
+        '404':
+          description: Не удалось найти виртуальную машину с указанным идентификатором
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VmNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Delete Vm Svc V1 Vms  Vm Id  Delete
+        '405':
+          description: У виртуальной машины есть связанные сущности
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VmHasReferencesExceptionSchema'
+                type: array
+                title: Response 405 Delete Vm Svc V1 Vms  Vm Id  Delete
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось удалить виртуальную машину с текущим статусом.
+            - Изменения в указанной зоне доступности запрещены.
+            - Диск с текущим статусом не может быть отключен от виртуальной машины.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/VmCanNotBeDeletedFromCurrentStateExceptionSchema'
+                type: array
+                title: Response 422 Delete Vm Svc V1 Vms  Vm Id  Delete
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ServiceUnavailableExceptionSchema'
+                type: array
+                title: Response 500 Delete Vm Svc V1 Vms  Vm Id  Delete
+      security:
+        - userPlaneApiToken: []
+  /api/v1/vms/{vm_id}/get-vnc:
+    post:
+      tags:
+        - VMs
+      summary: Запуск виртуальной консоли
+      description: Метод генерируют ссылку для доступа к виртуальной консоли.
+      operationId: get_vm_vnc_svc_v1_vms__vm_id__get_vnc_post
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: vm_id
+          description: Идентификатор виртуальной машины.
+          in: path
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Get Vm Vnc Svc V1 Vms  Vm Id  Get Vnc Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Get Vm Vnc Svc V1 Vms  Vm Id  Get Vnc Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Не удалось запустить виртуальную консоль на виртуальной машине с текущим статусом.
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Get Vm Vnc Svc V1 Vms  Vm Id  Get Vnc Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Get Vm Vnc Svc V1 Vms  Vm Id  Get Vnc Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1/vms/{vm_id}/remote-console:
+    post:
+      tags:
+        - VMs
+      summary: Запуск удаленной консоли
+      description: Метод генерируют ссылку для доступа к удаленной консоли.
+      operationId: generate_vm_remote_console_svc_v1_vms__vm_id__remote_console_post
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: vm_id
+          description: Идентификатор виртуальной машины.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicVmCreateRemoteConsoleRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Generate Vm Remote Console Svc V1 Vms  Vm Id  Remote Console Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Generate Vm Remote Console Svc V1 Vms  Vm Id  Remote Console Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Не удалось запустить удаленную консоль на виртуальной машине с текущим статусом.
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Generate Vm Remote Console Svc V1 Vms  Vm Id  Remote Console Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Generate Vm Remote Console Svc V1 Vms  Vm Id  Remote Console Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1/vms/{vm_id}/set-power:
+    post:
+      tags:
+        - VMs
+      summary: Управление питанием виртуальной машины
+      operationId: set_vm_power_svc_v1_vms__vm_id__set_power_post
+      parameters:
+        - required: true
+          schema:
+            type: string
+            format: uuid
+          name: vm_id
+          description: Идентификатор виртуальной машины.
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VmSetPowerRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Set Vm Power Svc V1 Vms  Vm Id  Set Power Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Set Vm Power Svc V1 Vms  Vm Id  Set Power Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти виртуальную машину с указанным идентификатором.
+            - Виртуальная машина с текущим статусом не может быть изменена.
+            - Изменения в указанной зоне доступности запрещены.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongVmByIdExceptionSchema'
+                type: array
+                title: Response 422 Set Vm Power Svc V1 Vms  Vm Id  Set Power Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/APIExceptionSchema'
+                type: array
+                title: Response 500 Set Vm Power Svc V1 Vms  Vm Id  Set Power Post
+      security:
+        - userPlaneApiToken: []
+  /api/v1.1/vms:
+    post:
+      tags:
+        - VMs
+      summary: Создание виртуальной машины V1.1
+      operationId: create_vm_v1_1_svc_v1_1_vms_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api__models__v1_1__vm_schemas__PublicVmsCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/PublicVmResponse'
+                type: array
+                title: Response Create Vm V1 1 Svc V1 1 Vms Post
+        '401':
+          description: Ошибка аутентификации
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthUnauthorizedExceptionSchema'
+                type: array
+                title: Response 401 Create Vm V1 1 Svc V1 1 Vms Post
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/AuthForbiddenExceptionSchema'
+                type: array
+                title: Response 403 Create Vm V1 1 Svc V1 1 Vms Post
+        '404':
+          description: |
+            Ресурс не найден:
+            - Не удалось найти образ с указанным идентификатором.
+            - Не удалось найти флейвор с указанным идентификатором.
+            - Не удалось найти тип диска с указанным идентификатором.
+            - Не удалось найти тег с указанным идентификатором.
+            - Не удалось найти публичный IP с указанным идентификатором.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ImageNotFoundExceptionSchema'
+                type: array
+                title: Response 404 Create Vm V1 1 Svc V1 1 Vms Post
+        '422':
+          description: |
+            Запрос не выполнен:
+            - Не удалось найти проект с указанным идентификатором.
+            - Проект не существует в указанной зоне доступности.
+            - Слишком маленький размер загрузочного диска.
+            - Превышено максимальное количество дисков для виртуальной машины.
+            - Ошибка в метаданных виртуальной машины.
+            - Ошибка в пользовательском шаблоне виртуальной машины.
+            - Метаданные образа с указанным идентификатором не найдены.
+            - Указанный IP-адрес недоступен.
+            - Подсеть по умолчанию не найдена.
+            - Обязательные для выбранного образа метаданные отсутствуют.
+            - Указанный IP-адрес не принадлежит подсети.
+            - Не удалось найти группу безопасности по умолчанию.
+            - Не удалось найти группу безопасности с указанным идентификатором.
+            - Публичный IP-адрес уже используется.
+            - Не удалось присвоить внутренний IP-адрес.
+            - Не удалось найти публичный IP с указанным идентификатором.
+            - Не заполнены обязательные поля с метаданными для образа.
+            - Флейвор недоступен.
+            - Группа безопасности недоступна.
+            - Подсеть недоступна.
+            - Публичный IP-адрес недоступен.
+            - Изменения в указанной зоне доступности запрещены.
+            - Статус указаного диска не позволяет подключить его к виртуальной машине.
+            - Выбранный тип диска доступен только на уровне бесплатного использования (free tier).
+            - Не удалось найти группу размещения с указанным идентификатором.
+            - Не удалось найти группу размещения с указанным названием.
+            - Флейвор с указанным идентификатором недоступен для виртуальной машины в этом проекте или организации.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/WrongProjectExceptionSchema'
+                type: array
+                title: Response 422 Create Vm V1 1 Svc V1 1 Vms Post
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExternalNetNotFoundOnServerExceptionSchema'
+                type: array
+                title: Response 500 Create Vm V1 1 Svc V1 1 Vms Post
+      security:
+        - userPlaneApiToken: []
+components:
+  schemas:
+    APIExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: APIExceptionSchema
+      example:
+        message: Service is unavailable, retry later
+        code: service_unavailable_error
+    AllowedAddressPairScheme:
+      properties:
+        ip_address:
+          anyOf:
+            - type: string
+              format: ipv4
+            - type: string
+              format: ipv4PrivateNetwork
+          description: IP-адрес.
+        mac_address:
+          type: string
+          maxLength: 17
+          minLength: 12
+          description: MAC-адрес
+      additionalProperties: false
+      type: object
+      required:
+        - ip_address
+      title: AllowedAddressPairScheme
+    AuthForbiddenExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: AuthForbiddenExceptionSchema
+      example:
+        message: Forbidden
+        code: forbidden
+    AuthUnauthorizedExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: AuthUnauthorizedExceptionSchema
+      example:
+        message: Unauthorized
+        code: unauthorized
+    AvailabilityZoneMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор зоны доступности.
+        name:
+          type: string
+          description: Название зоны доступности.
+      type: object
+      required:
+        - id
+        - name
+      description: Зона доступности.
+    AvailabilityZoneNotFoundExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: AvailabilityZoneNotFoundExceptionSchema
+      example:
+        message: Availability zone with this id is not found
+        code: not_found
+    CustomRequestValidationErrorSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+        field:
+          type: string
+          description: Поле запроса, которое вызвало ошибку валидации.
+      type: object
+      required:
+        - code
+        - message
+        - field
+      title: CustomRequestValidationErrorSchema
+      example:
+        message: Validation error
+        code: validation_error
+        field: Field caused the error
+        
+    DiskAlreadyExistsExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: DiskAlreadyExistsExceptionSchema
+      example:
+        message: Disk with this data already exists
+        code: disk_with_this_data_already_exists
+    DiskAttachRequest:
+      properties:
+        vm_id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+      additionalProperties: false
+      type: object
+      required:
+        - vm_id
+      title: DiskAttachRequest
+    DiskCanNotBeDeletedWithMultiMountsExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: DiskCanNotBeDeletedWithMultiMountsExceptionSchema
+      example:
+        message: Disk can not be deleted because has multiple mount points
+        code: disk_can_not_be_deleted_with_multi_mounts
+    DiskDetachRequest:
+      properties:
+        vm_id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+      additionalProperties: false
+      type: object
+      required:
+        - vm_id
+      title: DiskDetachRequest
+    DiskHasReferencesExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: DiskHasReferencesExceptionSchema
+      example:
+        message: Disk has references
+        code: disk_in_use
+    DiskNotFoundExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: DiskNotFoundExceptionSchema
+      example:
+        message: Disk with this id is not found
+        code: disk_not_found
+    DiskState:
+      type: string
+      enum:
+        - available
+        - in_use
+        - reserved
+        - error
+        - error_creating
+        - error_deleting
+        - creating
+        - updating
+        - deleting
+        - attaching
+        - detaching
+      title: DiskState
+      description: Статус диска.
+    DiskTypeMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор типа диска.
+        name:
+          type: string
+          description: Название типа диска.
+        free_tier:
+          type: boolean
+          description: Признак типа диска для уровня бесплатного использования (free tier).
+      type: object
+      required:
+        - id
+        - name
+        - free_tier
+      title: DiskTypeMiniResponse
+      description: Тип диска.
+    ExternalNetNotFoundOnServerExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: ExternalNetNotFoundOnServerExceptionSchema
+      example:
+        message: No Enabled External Network
+        code: external_network_not_found_on_server
+    FlavorEnum:
+      type: string
+      enum:
+        - general
+        - memory-optimized
+        - gpu_v100
+        - gpu_h100
+      title: FlavorEnum
+      description: An enumeration.
+    FlavorMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор флейвора.
+        name:
+          type: string
+          description: Название флейвора.
+        cpu:
+          type: integer
+          description: Количество виртуальных центральных процессоров (vCPU).
+        ram:
+          type: integer
+          description: Объем оперативной памяти (RAM) в ГБ.
+        gpu:
+          type: integer
+          description: Количество графических процессоров (GPU).
+        oversubscription:
+          type: string
+          description: Гарантированная доля vCPU.
+        free_tier:
+          type: boolean
+          description: Признак флейвора для бесплатного использования (free tier).
+      type: object
+      required:
+        - id
+        - name
+        - cpu
+        - ram
+        - gpu
+        - oversubscription
+        - free_tier
+      title: FlavorMiniResponse
+      description: Флейвор.
+    FlavorNotFoundExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: FlavorNotFoundExceptionSchema
+      example:
+        message: Flavor with this id is not found.
+        code: flavor_not_found
+    FlavorParamTypes:
+      type: string
+      enum:
+        - oversubscription
+        - flavor-type
+      description: Тип параметра.
+    FlavorState:
+      type: string
+      enum:
+        - created
+        - error_creating
+        - error_deleting
+        - creating
+        - deleting
+      title: FlavorState
+      description: Статус флейвора. 
+    FloatingIpMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор публичного IP-адреса.
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP-адрес.
+        state:
+          $ref: '#/components/schemas/FloatingIpState'
+      type: object
+      required:
+        - id
+        - state
+      title: FloatingIpMiniResponse
+      description: Публичный IP-адрес.
+    FloatingIpState:
+      type: string
+      enum:
+        - available
+        - in_use
+        - error
+        - error_creating
+        - error_deleting
+        - creating
+        - deleting
+        - updating
+        - attaching
+        - detaching
+      description: Статус публичного IP.
+    FloatingIpWithNameMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор публичного IP-адреса.
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP-адрес.
+        state:
+          $ref: '#/components/schemas/FloatingIpState'
+        name:
+          type: string
+          description: Название публичного IP.
+      type: object
+      required:
+        - id
+        - state
+        - name
+      title: FloatingIpWithNameMiniResponse
+      description: Публичный IP-адрес.
+    ImageMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор образа.
+        name:
+          type: string
+          description: Название образа.
+        free_tier_enabled:
+          type: boolean
+          description: Признак образа для бесплатного использования (free tier).
+        type:
+          type: string
+          description: Тип образа.
+        display_name:
+          type: string
+          description: Отображаемое название.
+      type: object
+      required:
+        - id
+        - name
+        - free_tier_enabled
+      description: Образ.
+    ImageNotFoundExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: ImageNotFoundExceptionSchema
+      example:
+        message: Image with this id is not found
+        code: image_not_found
+    ImageType:
+      type: string
+      enum:
+        - public
+        - private
+        - marketplace
+      title: ImageType
+      description: Тип образа.
+    InterfaceMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор сетевого интерфейса.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название сетевого интерфейса.
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP-адрес.
+        type:
+          $ref: '#/components/schemas/InterfaceType'
+        state:
+          $ref: '#/components/schemas/InterfaceState'
+      type: object
+      required:
+        - id
+        - name
+        - ip_address
+        - type
+        - state
+      title: InterfaceMiniResponse
+      description: Сетевой интерфейс.
+    InterfaceState:
+      type: string
+      enum:
+        - created
+        - error
+        - error_creating
+        - error_deleting
+        - creating
+        - deleting
+        - updating
+      title: InterfaceState
+      description: Статус сетевого интерфейса.
+    InterfaceType:
+      type: string
+      enum:
+        - regular
+        - system
+        - service
+        - gateway
+        - technical
+        - magic_technical
+        - fip
+        - direct_ip
+      title: InterfaceType
+      description: Тип интерфейса.
+    PaginationResponse_PublicDiskResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PublicDiskResponse'
+          type: array
+          description: Массив объектов.
+        offset:
+          type: integer
+          description: Количество пропущенных элементов с начала списка.
+          default: 0
+        limit:
+          type: integer
+          description: Максимальное количество элементов в ответе.
+          default: 10
+        total:
+          type: integer
+          description: Общее количество доступных элементов.
+      type: object
+      required:
+        - items
+        - total
+      title: PaginationResponse[PublicDiskResponse]
+    PaginationResponse_PublicFlavorResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PublicFlavorResponse'
+          type: array
+          description: Массив объектов.
+        offset:
+          type: integer
+          description: Количество пропущенных элементов с начала списка.
+          default: 0
+        limit:
+          type: integer
+          description: Максимальное количество элементов в ответе.
+          default: 10
+        total:
+          type: integer
+          description: Общее количество доступных элементов.
+      type: object
+      required:
+        - items
+        - total
+      title: PaginationResponse[PublicFlavorResponse]
+    PaginationResponse_PublicVmResponseItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PublicVmResponseItem'
+          type: array
+          description: Массив объектов.
+        offset:
+          type: integer
+          default: 0
+          description: Количество пропущенных элементов с начала списка.
+        limit:
+          type: integer
+          default: 10
+          description: Максимальное количество элементов в ответе.
+        total:
+          type: integer
+          description: Общее количество доступных элементов.
+      type: object
+      required:
+        - items
+        - total
+      title: PaginationResponse[PublicVmResponseItem]
+    PlacementGroupMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор группы размещения.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название группы размещения.
+      description: Группа размещения.
+    ProjectMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор проекта.
+        product_instance_id:
+          type: string
+          format: uuid4
+          description: Идентификатор экземпляра продукта, связанного с проектом.
+      type: object
+      required:
+        - id
+        - product_instance_id
+      description: Проект.
+    PublicAvailabilityZoneFlavorResponse:
+      properties:
+        availability_zone_id:
+          type: string
+          format: uuid4
+          description: Идентификатор зоны доступности.
+        availability_zone_name:
+          type: string
+          description: Название зоны доступности.
+        default:
+          type: boolean
+          description: Признак зоны доступности по умолчанию.
+        enabled:
+          type: boolean
+          description: Признак, который указывает, включена ли зона доступности.
+        state:
+          $ref: '#/components/schemas/FlavorState'
+      type: object
+      required:
+        - availability_zone_id
+        - availability_zone_name
+        - default
+        - enabled
+        - state
+      title: PublicAvailabilityZoneFlavorResponse
+    PublicDiskResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор диска.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название диска.
+        description:
+          type: string
+          maxLength: 255
+          minLength: 0
+          description: Описание диска.
+        size:
+          type: integer
+          description: Размер диска.
+        state:
+          $ref: '#/components/schemas/DiskState'
+        bootable:
+          type: boolean
+          description: Признак загрузочного диска.
+        readonly:
+          type: boolean
+          description: Признак диска только для чтения.
+        shared:
+          type: boolean
+          description: Признак общедоступного диска.
+        encrypted:
+          type: boolean
+          description: Признак зашифрованного диска.
+        serial_id:
+          type: string
+          description: Серийный номер диска.
+        project:
+          $ref: '#/components/schemas/ProjectMiniResponse'
+        availability_zone:
+          $ref: '#/components/schemas/AvailabilityZoneMiniResponse'
+        disk_type:
+          $ref: '#/components/schemas/DiskTypeMiniResponse'
+        created_time:
+          type: string
+          format: date-time
+          description: Дата и время создания диска.
+        modified_time:
+          type: string
+          format: date-time
+          description: Дата и время изменения диска.
+        tags:
+          items:
+            $ref: '#/components/schemas/TagMiniResponse'
+          type: array
+          description: Теги.
+        vms:
+          items:
+            $ref: '#/components/schemas/VmsBlockResponse'
+          type: array
+          description: Виртуальные машины.
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - size
+        - state
+        - bootable
+        - readonly
+        - shared
+        - encrypted
+        - project
+        - availability_zone
+        - disk_type
+        - created_time
+        - tags
+        - vms
+      title: PublicDiskResponse
+    PublicDiskUpdateRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название диска.
+        description:
+          type: string
+          maxLength: 255
+          minLength: 0
+          description: Описание диска.
+        size:
+          type: integer
+          maximum: 16384
+          minimum: 1
+          description: Размер диска в ГБ.
+        readonly:
+          type: boolean
+          description: Признак диска только для чтения.
+        shared:
+          type: boolean
+          description: Признак общедоступного диска.
+        encrypted:
+          type: boolean
+          description: Признак зашифрованного диска.
+        tag_ids:
+          items:
+            type: string
+            format: uuid4
+          type: array
+          description: Идентификаторы тегов.
+        tag_names:
+          items:
+            type: string
+            maxLength: 64
+            minLength: 1
+            pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          type: array
+          description: Названия тегов.
+      additionalProperties: false
+      type: object
+      title: PublicDiskUpdateRequest
+    PublicFlavorResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор флейвора.
+        name:
+          type: string
+          description: Название флейвора.
+        description:
+          type: string
+          description: Описание флейвора.
+        type:
+          type: string
+          description: Тип флейвора.
+        cpu:
+          type: integer
+          description: Количество виртуальных центральных процессоров (vCPU).
+        ram:
+          type: integer
+          description: Объем оперативной памяти (RAM) в ГБ.
+        gpu:
+          type: integer
+          description: Количество графических процессоров (GPU).
+        oversubscription:
+          type: string
+          description: Гарантированная доля vCPU.
+        assured_bandwidth:
+          type: integer
+          title: Assured Bandwidth
+        maximum_bandwidth:
+          type: integer
+          title: Maximum Bandwidth
+        pps:
+          type: integer
+          title: Pps
+        availability_zones:
+          items:
+            $ref: '#/components/schemas/PublicAvailabilityZoneFlavorResponse'
+          type: array
+          description: Зоны доступности.
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - type
+        - cpu
+        - ram
+        - gpu
+        - oversubscription
+        - assured_bandwidth
+        - maximum_bandwidth
+        - pps
+        - availability_zones
+      title: PublicFlavorResponse
+    PublicVmCreateRemoteConsoleRequest:
+      properties:
+        protocol:
+          $ref: '#/components/schemas/VmRemoteConsoleProtocol'
+      additionalProperties: false
+      type: object
+      description: Протокол.
+      required:
+        - protocol
+      title: PublicVmCreateRemoteConsoleRequest
+    
+    PublicVmResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+        name:
+          type: string
+          description: Название виртуальной машины.
+        description:
+          type: string
+          description: Описание виртуальной машины.
+        icon:
+          type: string
+          default: ''
+          description: Значок виртуальной машины в формате SVG.
+        tags:
+          items:
+            $ref: '#/components/schemas/TagMiniResponse'
+          type: array
+          description: Теги.
+        flavor:
+          $ref: '#/components/schemas/FlavorMiniResponse'
+        state:
+          $ref: '#/components/schemas/VmState'
+        locked:
+          type: boolean
+          description: Признак виртуальной машины, заблокированной для изменений.
+        image:
+          $ref: '#/components/schemas/ImageMiniResponse'
+        created_time:
+          type: string
+          format: date-time
+          description: Дата и время создания виртуальной машины.
+        modified_time:
+          type: string
+          format: date-time
+          description: Дата и время изменения виртуальной машины.
+        disks:
+          items:
+            $ref: '#/components/schemas/VmDisksResponseSection'
+          type: array
+          description: Диски.
+        metadata_fields:
+          items:
+            $ref: '#/components/schemas/VmMetadataResponseSection'
+          type: array
+          description: Метаданные виртуальной машины.
+        interfaces:
+          items:
+            $ref: '#/components/schemas/VmResponseInterfaceSection'
+          type: array
+          description: Сетевые интерфейсы виртуальной машины.
+        project:
+          $ref: '#/components/schemas/ProjectMiniResponse'
+        availability_zone:
+          $ref: '#/components/schemas/AvailabilityZoneMiniResponse'
+        vnc_url:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: URL виртуальной консоли.
+        vnc_ws:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: WebSocket URL виртуальной консоли.
+        remote_console_url:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: URL удаленной консоли.
+        remote_console_ws:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: WebSocket URL удаленной консоли.
+        remote_console_protocol:
+          $ref: '#/components/schemas/RemoteConsoleProtocol'
+        placement_group:
+          $ref: '#/components/schemas/PlacementGroupMiniResponse'
+        guest_agent_state:
+          allOf:
+            - $ref: '#/components/schemas/VmGuestAgentState'
+          default: unavailable
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - tags
+        - flavor
+        - state
+        - locked
+        - image
+        - created_time
+        - disks
+        - metadata_fields
+        - interfaces
+        - project
+        - availability_zone
+      title: PublicVmResponse
+    PublicVmResponseItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+        name:
+          type: string
+          description: Название виртуальной машины.
+        project_id:
+          type: string
+          format: uuid
+          description: Идентификатор проекта.
+        description:
+          type: string
+          description: Описание виртуальной машины.
+        icon:
+          type: string
+          default: ''
+          description: Значок виртуальной машины в формате SVG.
+        tags:
+          items:
+            $ref: '#/components/schemas/TagMiniResponse'
+          type: array
+          description: Список тегов, назначенных на виртуальную машину.
+        flavor:
+          $ref: '#/components/schemas/FlavorMiniResponse'
+          description: Параметр, описывающий конфигурацию виртуальной машины.
+        state:
+          $ref: '#/components/schemas/VmState'
+          description: Статус виртуальной машины.
+        locked:
+          type: boolean
+          description: Признак виртуальной машины, заблокированной для изменений.
+        created_time:
+          type: string
+          format: date-time
+          description: Дата и время создания виртуальной машины.
+        modified_time:
+          type: string
+          format: date-time
+          description: Дата и время изменения виртуальной машины.
+        interfaces:
+          items:
+            $ref: '#/components/schemas/VmResponseItemInterfaceSection'
+          type: array
+          description: Сетевые интерфейсы.
+        availability_zone:
+          $ref: '#/components/schemas/AvailabilityZoneMiniResponse'
+        vnc_url:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: URL виртуальной консоли.
+        vnc_ws:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: WebSocket URL виртуальной консоли.
+        remote_console_url:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: URL удаленной консоли.
+        remote_console_ws:
+          type: string
+          maxLength: 65536
+          minLength: 1
+          format: uri
+          description: WebSocket URL удаленной консоли.
+        remote_console_protocol:
+          $ref: '#/components/schemas/RemoteConsoleProtocol'
+        guest_agent_state:
+          allOf:
+            - $ref: '#/components/schemas/VmGuestAgentState'
+          default: unavailable
+      type: object
+      required:
+        - id
+        - name
+        - project_id
+        - description
+        - tags
+        - flavor
+        - state
+        - locked
+        - created_time
+        - interfaces
+        - availability_zone
+      title: PublicVmResponseItem
+    RemoteConsoleProtocol:
+      type: string
+      enum:
+        - vnc
+        - spice
+        - serial
+        - mks
+      description: Тип удаленной консоли.
+    SecurityGroupMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор группы безопасности.
+        name:
+          type: string
+          description: Название группы безопасности.
+        state:
+          $ref: '#/components/schemas/SecurityGroupState'
+      type: object
+      required:
+        - id
+        - name
+        - state
+      title: SecurityGroupMiniResponse
+    SecurityGroupState:
+      type: string
+      enum:
+        - created
+        - error
+        - error_creating
+        - error_deleting
+        - creating
+        - deleting
+        - updating
+      title: SecurityGroupState
+      description: Статус группы безопасности.
+    ServiceUnavailableExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: ServiceUnavailableExceptionSchema
+      example:
+        message: Service is unavailable, retry later
+        code: service_unavailable_error
+    SubnetWithAddressMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор подсети.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название подсети.
+        state:
+          $ref: '#/components/schemas/SubnetState'
+        routed_network:
+          type: boolean
+          description: Признак маршрутизируемой сети.
+        subnet_address:
+          type: string
+          description: Адрес подсети.
+      type: object
+      required:
+        - id
+        - name
+        - state
+        - routed_network
+        - subnet_address
+      description: Подсеть.
+    TagMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор тега.
+        name:
+          type: string
+          description: Название тега.
+        color:
+          type: string
+          description: Цвет тега.
+      type: object
+      required:
+        - id
+        - name
+        - color
+      title: TagMiniResponse
+    VmCanNotBeDeletedFromCurrentStateExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: VmCanNotBeDeletedFromCurrentStateExceptionSchema
+      example:
+        message: Vm can not be deleted from current state
+        code: vm_can_not_be_deleted_from_current_state
+    VmDeleteRequest:
+      properties:
+        delete_attachments:
+          $ref: '#/components/schemas/VmDeleteAttachmentsRequest'
+      additionalProperties: false
+      type: object
+      title: VmDeleteRequest
+    VmDisksResponseSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор диска.
+        name:
+          type: string
+          description: Название диска.
+        primary:
+          type: boolean
+          description: Признак загрузочного диска.
+        size:
+          type: integer
+          description: Размер диска.
+        state:
+          $ref: '#/components/schemas/DiskState'
+        serial_id:
+          type: string
+          description: Серийный номер диска.
+        tags:
+          items:
+            $ref: '#/components/schemas/TagMiniResponse'
+          type: array
+          description: Теги.
+        disk_type:
+          $ref: '#/components/schemas/VmResponseDiskTypeSection'
+        limit_bw:
+          type: integer
+          description: Ограничение пропускной способности (bandwidth) в Мбит/с.
+        limit_rate:
+          type: integer
+          description: Ограничение скорости передачи данных в МБ/с.
+        limit_lock:
+          type: boolean
+          description: Признак, который показывает, изменяются ли limit_bw и limit_rate при изменении размера диска.
+      type: object
+      required:
+        - id
+        - name
+        - primary
+        - size
+        - state
+        - tags
+        - disk_type
+        - limit_bw
+        - limit_rate
+        - limit_lock
+      title: VmDisksResponseSection
+    VmGuestAgentState:
+      type: string
+      enum:
+        - enabled
+        - disabled
+        - unavailable
+        - not_installed
+        - error
+      title: VmGuestAgentState
+      description: Статус Compute Agent.
+    VmHasReferencesExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: VmHasReferencesExceptionSchema
+      example:
+        message: Vm has references
+        code: vm_in_use
+    VmMetadataResponseSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор поля метаданных.
+        metadata_id:
+          type: string
+          format: uuid
+          description: Идентификатор метаданных.
+        name:
+          type: string
+          description: Название.
+        display_name:
+          type: string
+          description: Отображаемое название.
+        value:
+          type: string
+          maxLength: 3072
+          minLength: 0
+          description: Значение.
+      type: object
+      required:
+        - id
+        - metadata_id
+        - name
+        - display_name
+        - value
+      title: VmMetadataResponseSection
+    VmMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+        name:
+          type: string
+          description: Название виртуальной машины.
+        state:
+          $ref: '#/components/schemas/VmState'
+      type: object
+      required:
+        - id
+        - name
+        - state
+      title: VmMiniResponse
+      description: Виртуальная машина.
+    VmNotFoundExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: VmNotFoundExceptionSchema
+      example:
+        message: Vm with this id is not found
+        code: vm_not_found
+    VmRemoteConsoleProtocol:
+      type: string
+      enum:
+        - vnc
+        - serial
+      description: Тип удаленной консоли.
+    VmResponseDiskTypeSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор типа диска.
+        name:
+          type: string
+          description: Название типа диска.
+      type: object
+      required:
+        - id
+        - name
+      description: Тип диска.
+    VmResponseFreeTierInterfaceSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          title: Name
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP-адрес.
+        security_groups:
+          items:
+            $ref: '#/components/schemas/SecurityGroupMiniResponse'
+          type: array
+          description: Группы безопасности.
+        floating_ip:
+          $ref: '#/components/schemas/FloatingIpWithNameMiniResponse'
+        primary:
+          type: boolean
+          description: Признак основного сетевого интерфейса.
+        type:
+          $ref: '#/components/schemas/InterfaceType'
+        interface_security_enabled:
+          type: boolean
+          description: "Возможность добавить сетевой интерфейс в группу безопасности: true — можно, false — нельзя."
+        state:
+          $ref: '#/components/schemas/InterfaceState'
+      type: object
+      required:
+        - id
+        - name
+        - ip_address
+        - security_groups
+        - primary
+        - type
+        - interface_security_enabled
+        - state
+      title: VmResponseFreeTierInterfaceSection
+    VmResponseInterfaceSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор сетевого интерфейса.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название интерфейса.
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP-адрес интерфейса.
+        security_groups:
+          items:
+            $ref: '#/components/schemas/SecurityGroupMiniResponse'
+          type: array
+          description: Группы безопасности.
+        floating_ip:
+          $ref: '#/components/schemas/FloatingIpWithNameMiniResponse'
+        primary:
+          type: boolean
+          description: Признак основного сетевого интерфейса.
+        type:
+          $ref: '#/components/schemas/InterfaceType'
+        interface_security_enabled:
+          type: boolean
+          description: "Возможность добавить сетевой интерфейс в группу безопасности: true — можно, false — нельзя."
+        state:
+          $ref: '#/components/schemas/InterfaceState'
+        subnet:
+          $ref: '#/components/schemas/SubnetWithAddressMiniResponse'
+      type: object
+      required:
+        - id
+        - name
+        - ip_address
+        - security_groups
+        - primary
+        - type
+        - interface_security_enabled
+        - state
+      title: VmResponseInterfaceSection
+    VmResponseItemInterfaceSection:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор сетевого интерфейса.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название интерфейса.
+        ip_address:
+          type: string
+          format: ipv4
+          description: IP-адрес интерфейса.
+        floating_ip:
+          $ref: '#/components/schemas/FloatingIpWithNameMiniResponse'
+        primary:
+          type: boolean
+          description: Признак основного сетевого интерфейса.
+        state:
+          $ref: '#/components/schemas/InterfaceState'
+        type:
+          $ref: '#/components/schemas/InterfaceType'
+        subnet:
+          $ref: '#/components/schemas/SubnetWithAddressMiniResponse'
+      type: object
+      required:
+        - id
+        - name
+        - ip_address
+        - primary
+        - state
+        - type
+      title: VmResponseItemInterfaceSection
+    VmSetPowerRequest:
+      properties:
+        state:
+          $ref: '#/components/schemas/VmPowerEnum'
+      additionalProperties: false
+      type: object
+      required:
+        - state
+      title: VmSetPowerRequest
+    VmSetStateRequest:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+        state:
+          type: string
+          enum:
+            - stopped
+            - running
+          description: Статус виртуальной машины.
+      additionalProperties: false
+      type: object
+      required:
+        - id
+        - state
+      title: VmSetStateRequest
+    VmState:
+      type: string
+      enum:
+        - running
+        - stopped
+        - error
+        - error_creating
+        - error_deleting
+        - creating
+        - starting
+        - stopping
+        - rebooting
+        - deleting
+        - updating
+      description: Статус виртуальной машины.
+    VmUpdateRequest:
+      properties:
+        name:
+          anyOf:
+            - type: string
+              maxLength: 64
+              minLength: 1
+              pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+            - type: integer
+              enum:
+                - 1
+          description: Название виртуальной машины.
+          default: 1
+        flavor_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: integer
+              enum:
+                - 1
+          description: Идентификатор флейвора.
+          default: 1
+        flavor_name:
+          anyOf:
+            - type: string
+              maxLength: 64
+              minLength: 1
+              pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+            - type: integer
+              enum:
+                - 1
+          description: Название флейвора.
+          default: 1
+        description:
+          anyOf:
+            - type: string
+              maxLength: 255
+              minLength: 0
+            - type: integer
+              enum:
+                - 1
+          description: Описание виртуальной машины.
+          default: 1
+        tag_ids:
+          anyOf:
+            - items:
+                type: string
+                format: uuid
+              type: array
+            - type: integer
+              enum:
+                - 1
+          description: Идентификаторы тегов.
+          default: 1
+        tag_names:
+          anyOf:
+            - items:
+                type: string
+                maxLength: 64
+                minLength: 1
+                pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+              type: array
+            - type: integer
+              enum:
+                - 1
+          description: Названия тегов.
+          default: 1
+      additionalProperties: false
+      type: object
+      title: VmUpdateRequest
+      description: ''
+    VmWithFlavorMiniResponse:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор виртуальной машины.
+        name:
+          type: string
+          description: Название виртуальной машины.
+        state:
+          $ref: '#/components/schemas/VmState'
+        flavor:
+          $ref: '#/components/schemas/FlavorMiniResponse'
+      type: object
+      required:
+        - id
+        - name
+        - state
+        - flavor
+      description: Виртуальная машина.
+    VmsBlockResponse:
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Идентификатор виртуальной машины.
+        name:
+          type: string
+          maxLength: 64
+          minLength: 1
+          pattern: ^[a-zA-Z][a-zA-Z0-9.\-_]*$
+          description: Название виртуальной машины.
+        primary:
+          type: boolean
+          description: Признак основного диска.
+        state:
+          $ref: '#/components/schemas/VmState'
+      type: object
+      required:
+        - id
+        - name
+        - primary
+        - state
+      title: VmsBlockResponse
+    WrongAvailabilityZoneByIdExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: WrongAvailabilityZoneByIdExceptionSchema
+      example:
+        message: Availability zone with this id is not found
+        code: wrong_az
+    WrongDiskTypeByIdExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: WrongDiskTypeByIdExceptionSchema
+      example:
+        message: Disk type with such id not found for disk request
+        code: wrong_disk_type
+    WrongProjectExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: WrongProjectExceptionSchema
+      example:
+        message: Project with this id is not found
+        code: bad_project_id
+    WrongVmByIdExceptionSchema:
+      properties:
+        code:
+          type: string
+          description: Код ошибки.
+        message:
+          type: string
+          description: Описание ошибки.
+      type: object
+      required:
+        - code
+        - message
+      title: WrongVmByIdExceptionSchema
+      example:
+        message: Vm with this id is not found
+        code: bad_vm_id
+    api__models__v1_1__vm_schemas__PublicVmsCreateRequest:
+      items:
+        $ref: '#/components/schemas/api__models__v1_1__vm_schemas__PublicVmCreateRequest'
+      additionalProperties: false
+      type: array
+      title: PublicVmsCreateRequest
+    api__models__vm_schemas__PublicVmsCreateRequest:
+      items:
+        $ref: '#/components/schemas/api__models__vm_schemas__PublicVmCreateRequest'
+      additionalProperties: false
+      type: array
+      title: PublicVmsCreateRequest
+    api__models__vm_schemas__VmCreateDiskSection:
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/api__models__vm_schemas__VmCreateExistingDiskItem'
+          - $ref: '#/components/schemas/api__models__vm_schemas__VmCreateNewDiskItem'
+      additionalProperties: false
+      type: array
+      minItems: 1
+      title: VmCreateDiskSection
+      description: Диски. 
+  securitySchemes:
+    userPlaneApiToken:
+      type: http
+      description: |
+        [Получите токен](https://cloud.ru/docs/virtual-machines/ug/topics/api-ref__authentication.html) и передайте его в заголовке `Authorization`.
+      scheme: Bearer
+servers:
+  - url: https://compute.api.cloud.ru
+tags:
+  - name: VMs
+    description: В этом разделе собраны методы для управления виртуальными машинами, а также для получения информации о них.
+  - name: Availability Zones
+    description: В этом разделе собраны методы для получения информации о зонах доступности.
+  - name: Available IP addresses
+    description: В этом разделе собраны методы для получения информации о доступных публичных IP-адресах.
+  - name: Available subnets
+    description: В этом разделе собраны методы для получения информации о доступных подсетях.
+  - name: Backups
+    description: В этом разделе собраны методы для управления резервными копиями, а также для получения информации о них.
+  - name: Disk Types
+    description: В этом разделе собраны методы для получения информации о типах дисков.  
+  - name: Disks
+    description: В этом разделе собраны методы для управления дисками, а также для получения информации о них.
+  - name: Flavors
+    description: В этом разделе собраны методы для получения информации о флейворах.
+  - name: Floating IPs
+    description: В этом разделе собраны методы для управления публичными IP-адресами, а также для получения информации о них.
+  - name: Images
+    description: В этом разделе собраны методы для управления образами, а также для получения информации о них.
+  - name: Interfaces
+    description: В этом разделе собраны методы для управления сетевыми интерфейсами, а также для получения информации о них.
+  - name: NAT Gateways
+    description: В этом разделе собраны методы для управления SNAT-шлюзами, а также для получения информации о них.
+  - name: Organization limits
+    description: В этом разделе собраны методы для получения информации о квотах в организации.
+  - name: Organizations
+    description: В этом разделе собраны методы для получения информации об организации.
+  - name: Parameters
+    description: В этом разделе собраны методы для получения информации о параметрах ресурсов.
+  - name: Placement Groups
+    description: В этом разделе собраны методы для управления группами размещения, а также для получения информации о них. 
+  - name: Projects
+    description: В этом разделе собраны методы для получения информации о проекте и его ресурсах.
+  - name: Security Group Rules
+    description: В этом разделе собраны методы для управления правилами групп безопасности, а также для получения информации о них.
+  - name: Security Groups
+    description: В этом разделе собраны методы для управления группами безопасности, а также для получения информации о них.
+  - name: Subnets
+    description: В этом разделе собраны методы для управления подсетями, а также для получения информации о них.
+  - name: Tasks
+    description: В этом разделе собраны методы для получения информации о задачах.

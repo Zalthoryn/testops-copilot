@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://foundation-models.api.cloud.ru/v1}
+      LLM_MODEL: ${LLM_MODEL:-openai/gpt-oss-120b}
+      COMPUTE_API_URL: ${COMPUTE_API_URL:-https://compute.api.cloud.ru}
+      COMPUTE_API_TOKEN: ${COMPUTE_API_TOKEN:-}
+      COMPUTE_PROJECT_ID: ${COMPUTE_PROJECT_ID:-}
+      GITLAB_URL: ${GITLAB_URL:-https://gitlab.com}
+      GITLAB_TOKEN: ${GITLAB_TOKEN:-}
+      GITLAB_PROJECT_ID: ${GITLAB_PROJECT_ID:-}
+      STORAGE_PATH: /data/storage
+      TEMP_PATH: /data/temp
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    volumes:
+      - backend_storage:/data/storage
+      - backend_temp:/data/temp
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8000/api}
+    environment:
+      VITE_API_BASE: ${VITE_API_BASE:-http://localhost:8000/api}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  backend_storage:
+  backend_temp:
+  redis_data:
